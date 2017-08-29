@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <link rel="stylesheet" type="text/css" href="navbar.css">
+    <link rel="stylesheet" type="text/css" href="login.css">
+    <link rel="stylesheet" type="text/css" href="table.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1"/>
+
+    <link rel="stylesheet" href="/webjars/bootstrap/3.3.7/css/bootstrap.min.css"/>
+
+    <script src="/webjars/jquery/3.1.1/jquery.min.js"></script>
+    <script src="/webjars/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+
+    <!--<script src="/js/navbsrLogin.js"></script>-->
+    <script src="/js/showRecipe.js"></script>
+</head>
+<body>
+
+<div class="container">
+    <nav class="navbar navbar-inverse">
+        <div class="navbar-header">
+            <button class="navbar-toggle" type="button" data-toggle="collapse" data-target=".js-navbar-collapse">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="#"> Meal Planner</a>
+        </div>
+
+        <!-- Collect the nav links, forms, and other content for toggling -->
+        <div class="collapse navbar-collapse js-navbar-collapse">
+            <ul class="nav navbar-nav">
+                <li class="active"><a href="#">Link</a></li>
+                <li><a href="#">Link</a></li>
+                <li class="dropdown mega-dropdown">
+                    <a href="#" class="dropdown-toggle" data-toggle="dropdown"> Recipes <span class="caret"></span></a>
+                    <ul class="dropdown-menu mega-dropdown-menu">
+                        <li class="col-sm-3">
+                            <ul>
+                                <li class="dropdown-header">Best recipes</li>
+                                <div id="menCollection" class="carousel slide" data-ride="carousel">
+                                    <div class="carousel-inner">
+                                        <div class="item active">
+                                            <a href="#"><img src= "http://www.seriouseats.com/images/2017/03/20170329-eggs-dinner-recipes-roundup-06.jpg" class="img-responsive" alt="product 1"></a>
+                                            <h4><small> Baked Eggs With Creamy Greens, Mushrooms, and Cheese </small></h4>
+                                            <button href="#" class="btn btn-default" type="button"><span class="glyphicon glyphicon-heart"></span> Add to Planner</button>
+                                        </div><!-- End Item -->
+                                        <div class="item">
+                                            <a href="#"><img src="http://www.seriouseats.com/recipes/assets_c/2017/06/20170617-bulgogi-burger-matt-clifton-1-thumb-1500xauto-438105.jpg" class="img-responsive" alt="product 2"></a>
+                                            <h4><small>Grilled Korean Bulgogi Burgers With Kimchi Mayo and Pickled Daikon Recipe</small></h4>
+                                           <button href="#" class="btn btn-default" type="button"><span class="glyphicon glyphicon-heart"></span> Add to Planner </button>
+                                        </div><!-- End Item -->
+                                        <div class="item">
+                                            <a href="#"><img src="http://www.seriouseats.com/recipes/assets_c/2017/03/20170210-chicken-massaman-emily-matt-clifton-4-thumb-1500xauto-436790.jpg" class="img-responsive" alt="product 3"></a>
+                                            <h4><small>Chicken Massaman Curry With Wheat Beer and Potatoes Recipe</small></h4>
+                                           <button href="#" class="btn btn-default" type="button"><span class="glyphicon glyphicon-heart"></span> Add to Planner </button>
+                                        </div><!-- End Item -->
+                                    </div><!-- End Carousel Inner -->
+                                    <!-- Controls -->
+                                    <a class="left carousel-control" href="#menCollection" role="button" data-slide="prev">
+                                        <span class="glyphicon glyphicon-chevron-left" aria-hidden="true"></span>
+                                        <span class="sr-only">Previous</span>
+                                    </a>
+                                    <a class="right carousel-control" href="#menCollection" role="button" data-slide="next">
+                                        <span class="glyphicon glyphicon-chevron-right" aria-hidden="true"></span>
+                                        <span class="sr-only">Next</span>
+                                    </a>
+                                </div><!-- /.carousel -->
+                                <li class="divider"></li>
+                                <li><a href="#"> View all the best recipes <span class="glyphicon glyphicon-chevron-right pull-right"></span></a></li>
+                            </ul>
+                        </li>
+                        <li class="col-sm-3">
+                            <ul>
+                                <li class="dropdown-header">Breakfast</li>
+                                <li><a href="#"> Wegan </a></li>
+                                <li><a href="#">Carousel Control</a></li>
+                                <li><a href="#">Left & Right Navigation</a></li>
+                                <li><a href="#">Four Columns Grid</a></li>
+                                <li class="divider"></li>
+                                <li class="dropdown-header">Pasta and pizza</li>
+                                <li><a href="#">Glyphicon</a></li>
+                                <li><a href="#">Google Fonts</a></li>
+                            </ul>
+                        </li>
+                        <li class="col-sm-3">
+                            <ul>
+                                <li class="dropdown-header">Baking and desserts</li>
+                                <li><a href="#">Navbar Inverse</a></li>
+                                <li><a href="#">Pull Right Elements</a></li>
+                                <li><a href="#">Coloured Headers</a></li>
+                                <li><a href="#">Primary Buttons & Default</a></li>
+                            </ul>
+                        </li>
+                        <li class="col-sm-3">
+                            <ul>
+                                <li class="dropdown-header">Main dishes</li>
+                                <li><a href="#">Easy to Customize</a></li>
+                                <li><a href="#">Calls to action</a></li>
+                                <li><a href="#">Custom Fonts</a></li>
+                                <li><a href="#">Slide down on Hover</a></li>
+                            </ul>
+                        </li>
+                    </ul>
+                </li>
+            </ul>
+
+            <form class="navbar-form navbar-left" role="search">
+                <div class="form-group">
+                    <input type="text" class="form-control" placeholder="Search">
+                </div>
+                <button type="submit" class="btn btn-default">Submit</button>
+            </form>
+            <ul class="nav navbar-nav navbar-right">
+                <li><p class="navbar-text">Already have an account?</p></li>
+                <li class="dropdown">
+                    <a href="#" class="dropdown-toggle" data-toggle="dropdown"><b>Login</b> <span class="caret"></span></a>
+                    <ul id="login-dp" class="dropdown-menu">
+                        <li>
+                            <div class="row">
+                                <div class="col-md-12">
+                                    Login via
+                                    <div class="social-buttons">
+                                        <a href="#" class="btn btn-fb"><i class="fa fa-facebook"></i> Facebook</a>
+                                        <a href="#" class="btn btn-tw"><i class="fa fa-twitter"></i> Twitter</a>
+                                    </div>
+                                    or
+                                    <form class="form" role="form" method="post" action="login" accept-charset="UTF-8" id="login-nav">
+                                        <div class="form-group">
+                                            <label class="sr-only" for="exampleInputEmail2">Email address</label>
+                                            <input type="email" class="form-control" id="exampleInputEmail2" placeholder="Email address" required>
+                                        </div>
+                                        <div class="form-group">
+                                            <label class="sr-only" for="exampleInputPassword2">Password</label>
+                                            <input type="password" class="form-control" id="exampleInputPassword2" placeholder="Password" required>
+                                            <div class="help-block text-right"><a href="">Forget the password ?</a></div>
+                                        </div>
+                                        <div class="form-group">
+                                            <button type="submit" class="btn btn-primary btn-block">Sign in</button>
+                                        </div>
+                                        <div class="checkbox">
+                                            <label>
+                                                <input type="checkbox"> keep me logged-in
+                                            </label>
+                                        </div>
+                                    </form>
+                                </div>
+                                <div class="bottom text-center">
+                                    New here ? <a href="#"><b>Join Us</b></a>
+                                </div>
+                            </div>
+                        </li>
+                    </ul>
+                </li>
+            </ul>
+        </div>
+</nav>
+</div>
+
+    <div class="container" >
+
+            <div class="starter-template">
+                <div>
+                    <h2> Meal Planne
+                        <button id="open-add-form" type="button" class="btn btn-primary remove-button pull-right"
+                                data-toggle="modal" data-target="#addModal"><span class="glyphicon glyphicon-plus"></span> Add
+                            recipe
+                        </button>
+                    </h2>
+                    <div class="clearfix"></div>
+                </div>
+                <div id="recipe">Please wait</div>
+            </div>
+
+
+        <div class="modal fade" id="addModal" tabindex="-1" role="dialog" aria-labelledby="addModalLabel">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+                                aria-hidden="true">&times;</span></button>
+                        <h4 class="modal-title" id="addModalLabel">Add recipe</h4>
+                    </div>
+                    <div class="modal-body">
+                        <form class="form-horizontal">
+                            <div class="form-group">
+                                <label for="addDay" class="col-sm-3 control-label">Day of week</label>
+                                <div class="col-sm-9">
+                                    <select class="form-control"  id="addDay">
+                                        <option></option>
+                                        <option>Monday</option>
+                                        <option>Tuesday</option>
+                                        <option>Wednesday</option>
+                                        <option>Thursday</option>
+                                        <option>Friday</option>
+                                        <option>Saturday</option>
+                                        <option>Sunday</option>
+                                    </select>
+
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label for="addRecipe" class="col-sm-3 control-label">Recipe</label>
+                                <div class="col-sm-9">
+                                    <textarea class="form-control" id="addRecipe" placeholder="Recipe" rows="15"></textarea>
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="addTag" class="col-sm-3 control-label">Tag</label>
+                                <div class="col-sm-9">
+                                    <input type="text" class="form-control" id="addTag" placeholder="Tag">
+                                </div>
+                            </div>
+
+                        </form>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                        <button type="button" id="add-recipe-button" data-dismiss="modal" class="btn btn-primary">Save</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="modal fade" id="editModal" tabindex="-1" role="dialog" aria-labelledby="editModalLabel">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                        <h4 class="modal-title" id="editModalLabel">Edit recipe</h4>
+                    </div>
+                    <div class="modal-body">
+                        <form class="form-horizontal">
+                            <div class="form-group">
+                                <label for="edit-dayOfWeek" class="col-sm-3 control-label">Day of week </label>
+                                <div class="col-sm-9">
+                                    <select class="form-control"  id="edit-dayOfWeek">
+                                        <option></option>
+                                        <option>Monday</option>
+                                        <option>Tuesday</option>
+                                        <option>Wednesday</option>
+                                        <option>Thursday</option>
+                                        <option>Friday</option>
+                                        <option>Saturday</option>
+                                        <option>Sunday</option>
+
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label for="edit-recipe" class="col-sm-3 control-label">Recipe</label>
+                                <div class="col-sm-9">
+                                    <input type="text" class="form-control" id="edit-recipe" placeholder="Recipe">
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="edit-tag" class="col-sm-3 control-label">Tag</label>
+                                <div class="col-sm-9">
+                                    <input type="text" class="form-control" id="edit-tag" placeholder="Tag">
+                                </div>
+                            </div>
+
+                            <input id="edit-id" type="hidden"/>
+                        </form>
+                    </div>
+
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                        <button type="button" id="edit-recipe-button" data-dismiss="modal" class="btn btn-primary">Save</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+</body>
+</html>
