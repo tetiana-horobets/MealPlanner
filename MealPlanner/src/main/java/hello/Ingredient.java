@@ -1,19 +1,29 @@
 package hello;
 
+import java.sql.ResultSet;
+import java.sql.SQLException;
+
 public class Ingredient {
     private long id;
-    private String nameIngridient;
+    private String name;
     private String quantity;
     private String unit;
 
     public Ingredient() {
     }
 
-    public Ingredient(long id, String nameIngridient, String quantity, String unit) {
+    public Ingredient(long id, String name, String quantity, String unit) {
         this.id = id;
-        this.nameIngridient = nameIngridient;
+        this.name = name;
         this.quantity = quantity;
         this.unit = unit;
+    }
+
+    Ingredient(ResultSet resultSet) throws SQLException {
+        this.id = resultSet.getLong("id");
+        this.name = resultSet.getString("name");
+        this.quantity = resultSet.getString("quantity");
+        this.unit = resultSet.getString("unit");
     }
 
     public long getId() {
@@ -24,12 +34,12 @@ public class Ingredient {
         this.id = id;
     }
 
-    public String getNameIngridient() {
-        return nameIngridient;
+    public String getName() {
+        return name;
     }
 
-    public void setNameIngridient(String nameIngridient) {
-        this.nameIngridient = nameIngridient;
+    public void setName(String name) {
+        this.name = name;
     }
 
     public String getQuantity() {

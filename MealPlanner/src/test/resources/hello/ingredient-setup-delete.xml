@@ -1,0 +1,5 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dataset>
+    <ingredient id="1" name="Onion" quantity="1" unit="piece"/>
+    <ingredient id="2" name="Milk" quantity="300" unit="ml"/>
+</dataset>
