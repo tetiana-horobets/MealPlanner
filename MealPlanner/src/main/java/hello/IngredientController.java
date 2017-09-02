@@ -9,36 +9,35 @@ import java.util.Collection;
 @RestController
 public class IngredientController {
 
-    private JdbcTemplate jdbcTemplate;
+    private IngredientRepository repository;
 
     @Autowired
-    public IngredientController(JdbcTemplate jdbcTemplate) {
-        this.jdbcTemplate = jdbcTemplate;
+    public IngredientController(IngredientRepository repository) {
+        this.repository = repository;
     }
 
     @GetMapping("/ingredient/{id}")
     public Ingredient getIngredient(@PathVariable(value = "id") long id) {
-        return jdbcTemplate.queryForObject("SELECT * FROM ingredient WHERE id = ?", (resultSet, rowNum) -> new Ingredient(resultSet), id);
+        return repository.findById(id);
     }
 
     @GetMapping("/ingredient")
     public Collection<Ingredient> getIngredient() {
-        return jdbcTemplate.query("SELECT * FROM ingredient", (resultSet, rowNum) -> new Ingredient(resultSet));
+        return repository.findAll();
     }
 
     @DeleteMapping("/ingredient/{id}")
     public void deleteIngredient(@PathVariable(value = "id") long id) {
-        jdbcTemplate.update("DELETE FROM ingredient WHERE id = ?", id);
+        repository.delete(id);
     }
 
     @PostMapping("/ingredient")
     public void addIngredient(@RequestBody Ingredient ingredient) {
-        jdbcTemplate.update("INSERT INTO ingredient (name, quantity, unit) VALUES (?, ?, ?)", ingredient.getName(), ingredient.getQuantity(), ingredient.getUnit());
+        repository.add(ingredient);
     }
 
     @PutMapping("/ingredient/{id}")
     public void editIngredient(@PathVariable(value = "id") long id, @RequestBody Ingredient ingredient) {
-        jdbcTemplate.update("UPDATE ingredient set name = ?, quantity = ?, unit = ? WHERE id = ?", ingredient.getName(), ingredient.getQuantity(),  ingredient.getUnit(), id);
+        repository.edit(id, ingredient);
     }
-
 }
