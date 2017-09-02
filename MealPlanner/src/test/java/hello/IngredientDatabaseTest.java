@@ -27,7 +27,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @SpringBootTest(classes = Application.class)
 @AutoConfigureMockMvc
 @TestExecutionListeners({DependencyInjectionTestExecutionListener.class, DirtiesContextTestExecutionListener.class, TransactionalTestExecutionListener.class, DbUnitTestExecutionListener.class})
-public class IngredientTest {
+public class IngredientDatabaseTest {
 
     @Autowired
     private MockMvc mockMvc;
@@ -35,7 +35,7 @@ public class IngredientTest {
     @Test
     @DatabaseSetup("ingredient-setup-findById.xml")
     public void findsIngredientById() throws Exception {
-        mockMvc.perform(get("/ingredient/1"))
+        mockMvc.perform(get("/api/ingredient/1"))
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(content().json("{\n" +
@@ -50,7 +50,7 @@ public class IngredientTest {
     @DatabaseSetup("ingredient-setup-findAll.xml")
     public void findsAllIngredients() throws Exception {
 
-        mockMvc.perform(get("/ingredient"))
+        mockMvc.perform(get("/api/ingredient"))
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(content().json("[\n" +
@@ -74,7 +74,7 @@ public class IngredientTest {
     @ExpectedDatabase(assertionMode = NON_STRICT, value = "ingredient-expected-delete.xml")
     public void deletesIngredient() throws Exception {
 
-        mockMvc.perform(delete("/ingredient/1"))
+        mockMvc.perform(delete("/api/ingredient/1"))
                 .andDo(print())
                 .andExpect(status().isOk());
     }
@@ -83,7 +83,7 @@ public class IngredientTest {
     @DatabaseSetup("ingredient-setup-create.xml")
     @ExpectedDatabase(assertionMode = NON_STRICT, value = "ingredient-expected-create.xml")
     public void createsIngredient() throws Exception {
-        mockMvc.perform(post("/ingredient")
+        mockMvc.perform(post("/api/ingredient")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content("{\n" +
                         "  \"name\": \"Milk\",\n" +
@@ -99,7 +99,7 @@ public class IngredientTest {
     @ExpectedDatabase(assertionMode = NON_STRICT, value = "ingredient-expected-edit.xml")
     public void editsIngredients() throws Exception {
 
-        mockMvc.perform(put("/ingredient/1")
+        mockMvc.perform(put("/api/ingredient/1")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content("{\n" +
                         "  \"name\":\"Milk\",\n" +
@@ -109,5 +109,4 @@ public class IngredientTest {
                 .andDo(print())
                 .andExpect(status().isOk());
     }
-
 }

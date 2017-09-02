@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Ingredients</title>
+
+    <script src="/webjars/jquery/3.1.1/jquery.min.js"></script>
+
+    <script type="text/javascript">
+        $(document).ready(function() {
+            $.ajax({
+                url: "/api/ingredient"
+            }).then(function(ingredients) {
+                var html = '<table>';
+
+                for(var i in ingredients) {
+                    var ingredient = ingredients[i];
+
+                    html += '<tr>';
+                    html += '<td class="ingredient-name">' + ingredient.name + '</td>';
+                    html += '<td class="ingredient-quantity">' + ingredient.quantity + '</td>';
+                    html += '<td class="ingredient-unit">' + ingredient.unit + '</td>';
+                    html += '</tr>';
+                }
+
+                $('#container').html(html);
+            });
+        });
+    </script>
+</head>
+<body>
+    <h1>Ingredients</h1>
+    <div id="container"></div>
+</body>

@@ -16,27 +16,27 @@ public class IngredientController {
         this.repository = repository;
     }
 
-    @GetMapping("/ingredient/{id}")
+    @GetMapping("/api/ingredient/{id}")
     public Ingredient getIngredient(@PathVariable(value = "id") long id) {
         return repository.findById(id);
     }
 
-    @GetMapping("/ingredient")
+    @GetMapping("/api/ingredient")
     public Collection<Ingredient> getIngredient() {
         return repository.findAll();
     }
 
-    @DeleteMapping("/ingredient/{id}")
+    @DeleteMapping("/api/ingredient/{id}")
     public void deleteIngredient(@PathVariable(value = "id") long id) {
         repository.delete(id);
     }
 
-    @PostMapping("/ingredient")
+    @PostMapping("/api/ingredient")
     public void addIngredient(@RequestBody Ingredient ingredient) {
         repository.add(ingredient);
     }
 
-    @PutMapping("/ingredient/{id}")
+    @PutMapping("/api/ingredient/{id}")
     public void editIngredient(@PathVariable(value = "id") long id, @RequestBody Ingredient ingredient) {
         repository.edit(id, ingredient);
     }
