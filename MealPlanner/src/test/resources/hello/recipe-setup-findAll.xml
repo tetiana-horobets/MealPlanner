@@ -1,0 +1,5 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dataset>
+    <recipes id="9999" dayOfWeek="Wednesday" content="bread 1" searchTag="sandwich"/>
+    <recipes id="10000" dayOfWeek="Wednesday" content="bread 2" searchTag="sandwich"/>
+</dataset>
