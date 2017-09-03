@@ -26,6 +26,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import static org.assertj.core.api.Java6Assertions.assertThat;
 import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.DEFINED_PORT;
@@ -38,6 +39,9 @@ public class IngredientWebTest {
 
     private static WebDriver webDriver;
     private static WebDriverWait wait;
+    private static IngredientPage page;
+    private static AddIngredientForm addForm;
+    private static EditIngredientForm editForm;
 
     @Autowired
     private MockIngredientRepository mockRepository;
@@ -46,6 +50,10 @@ public class IngredientWebTest {
     public static void setUp() {
         webDriver = new ChromeDriver();
         wait = new WebDriverWait(webDriver, 10);
+
+        page = new IngredientPage();
+        addForm = new AddIngredientForm();
+        editForm = new EditIngredientForm();
     }
 
     @Before
@@ -58,36 +66,27 @@ public class IngredientWebTest {
         mockRepository.add(new Ingredient(1, "Garlic", "1", "piece"));
         mockRepository.add(new Ingredient(2, "Milk", "300", "ml"));
 
-        webDriver.get("localhost:8080/ingredient.html");
-        wait.until(requestIsComplete());
+        page.open();
 
-        List<WebElement> names = webDriver.findElements(By.className("ingredient-name"));
-        List<WebElement> quantities = webDriver.findElements(By.className("ingredient-quantity"));
-        List<WebElement> units = webDriver.findElements(By.className("ingredient-unit"));
-
-        assertThat(names).extracting(WebElement::getText).containsExactly("Garlic", "Milk");
-        assertThat(quantities).extracting(WebElement::getText).containsExactly("1", "300");
-        assertThat(units).extracting(WebElement::getText).containsExactly("piece", "ml");
+        assertThat(page.getIngredientNames()).containsExactly("Garlic", "Milk");
+        assertThat(page.getIngredientQuantities()).containsExactly("1", "300");
+        assertThat(page.getIngredientUnits()).containsExactly("piece", "ml");
     }
 
     @Test
     public void addsIngredient() throws Exception {
         mockRepository.add(new Ingredient(1, "Garlic", "1", "piece"));
 
-        webDriver.get("localhost:8080/ingredient.html");
-        webDriver.findElement(By.id("add-input-ingredient-name")).sendKeys("Sausage");
-        webDriver.findElement(By.id("add-input-ingredient-quantity")).sendKeys("1");
-        webDriver.findElement(By.id("add-input-ingredient-unit")).sendKeys("kg");
-        webDriver.findElement(By.id("add-button-ingredient")).click();
-        wait.until(requestIsComplete());
+        page.open();
 
-        List<WebElement> names = webDriver.findElements(By.className("ingredient-name"));
-        List<WebElement> quantities = webDriver.findElements(By.className("ingredient-quantity"));
-        List<WebElement> units = webDriver.findElements(By.className("ingredient-unit"));
+        addForm.writeName("Sausage");
+        addForm.writeQuantity("1");
+        addForm.writeUnit("kg");
+        addForm.submit();
 
-        assertThat(names).extracting(WebElement::getText).containsExactly("Garlic", "Sausage");
-        assertThat(quantities).extracting(WebElement::getText).containsExactly("1", "1");
-        assertThat(units).extracting(WebElement::getText).containsExactly("piece", "kg");
+        assertThat(page.getIngredientNames()).containsExactly("Garlic", "Sausage");
+        assertThat(page.getIngredientQuantities()).containsExactly("1", "1");
+        assertThat(page.getIngredientUnits()).containsExactly("piece", "kg");
     }
 
     @Test
@@ -95,19 +94,12 @@ public class IngredientWebTest {
         mockRepository.add(new Ingredient(1, "Garlic", "1", "piece"));
         mockRepository.add(new Ingredient(2, "Milk", "300", "ml"));
 
-        webDriver.get("localhost:8080/ingredient.html");
-        wait.until(requestIsComplete());
+        page.open();
+        page.clickOnRemoveButton(2);
 
-        webDriver.findElement(By.id("delete-button-ingredient-2")).click();
-        wait.until(requestIsComplete());
-
-        List<WebElement> names = webDriver.findElements(By.className("ingredient-name"));
-        List<WebElement> quantities = webDriver.findElements(By.className("ingredient-quantity"));
-        List<WebElement> units = webDriver.findElements(By.className("ingredient-unit"));
-
-        assertThat(names).extracting(WebElement::getText).containsExactly("Garlic");
-        assertThat(quantities).extracting(WebElement::getText).containsExactly("1");
-        assertThat(units).extracting(WebElement::getText).containsExactly("piece");
+        assertThat(page.getIngredientNames()).containsExactly("Garlic");
+        assertThat(page.getIngredientQuantities()).containsExactly("1");
+        assertThat(page.getIngredientUnits()).containsExactly("piece");
     }
 
     @Test
@@ -115,41 +107,24 @@ public class IngredientWebTest {
         mockRepository.add(new Ingredient(1, "Garlic", "1", "piece"));
         mockRepository.add(new Ingredient(2, "Milk", "300", "ml"));
 
-        webDriver.get("localhost:8080/ingredient.html");
-        wait.until(requestIsComplete());
+        page.open();
+        page.clickOnEditButton(2);
 
-        webDriver.findElement(By.id("edit-button-ingredient-2")).click();
-        wait.until(requestIsComplete());
+        assertThat(editForm.getName()).isEqualTo("Milk");
+        assertThat(editForm.getQuantity()).isEqualTo("300");
+        assertThat(editForm.getUnit()).isEqualTo("ml");
 
-        WebElement inputName = webDriver.findElement(By.id("edit-input-ingredient-name"));
-        WebElement inputQuantity = webDriver.findElement(By.id("edit-input-ingredient-quantity"));
-        WebElement inputUnit = webDriver.findElement(By.id("edit-input-ingredient-unit"));
+        editForm.replaceName("Water");
+        editForm.replaceQuantity("2");
+        editForm.replaceUnit("l");
+        editForm.submit();
 
-        assertThat(inputName.getAttribute("value")).isEqualTo("Milk");
-        assertThat(inputQuantity.getAttribute("value")).isEqualTo("300");
-        assertThat(inputUnit.getAttribute("value")).isEqualTo("ml");
-
-        inputName.clear();
-        inputQuantity.clear();
-        inputUnit.clear();
-
-        inputName.sendKeys("Water");
-        inputQuantity.sendKeys("2");
-        inputUnit.sendKeys("l");
-
-        webDriver.findElement(By.id("save-button-ingredient")).click();
-        wait.until(requestIsComplete());
-
-        List<WebElement> names = webDriver.findElements(By.className("ingredient-name"));
-        List<WebElement> quantities = webDriver.findElements(By.className("ingredient-quantity"));
-        List<WebElement> units = webDriver.findElements(By.className("ingredient-unit"));
-
-        assertThat(names).extracting(WebElement::getText).containsExactly("Garlic", "Water");
-        assertThat(quantities).extracting(WebElement::getText).containsExactly("1", "2");
-        assertThat(units).extracting(WebElement::getText).containsExactly("piece", "l");
+        assertThat(page.getIngredientNames()).containsExactly("Garlic", "Water");
+        assertThat(page.getIngredientQuantities()).containsExactly("1", "2");
+        assertThat(page.getIngredientUnits()).containsExactly("piece", "l");
     }
 
-    private Predicate<WebDriver> requestIsComplete() {
+    private static Predicate<WebDriver> requestIsComplete() {
         return (webDriver) -> webDriver != null && webDriver.findElement(By.id("async-load")).getAttribute("value").equals("false");
     }
 
@@ -166,6 +141,107 @@ public class IngredientWebTest {
         @Profile("web-test")
         public MockIngredientRepository repository() {
             return new MockIngredientRepository();
+        }
+    }
+
+    static class IngredientPage {
+
+        void open() {
+            webDriver.get("localhost:8080/ingredient.html");
+            wait.until(requestIsComplete());
+        }
+
+        List<String> getIngredientNames() {
+            return getClassValues("ingredient-name");
+        }
+
+        List<String> getIngredientQuantities() {
+            return getClassValues("ingredient-quantity");
+        }
+
+        List<String> getIngredientUnits() {
+            return getClassValues("ingredient-unit");
+        }
+
+        void clickOnRemoveButton(int id) {
+            webDriver.findElement(By.id("delete-button-ingredient-" + id)).click();
+            wait.until(requestIsComplete());
+        }
+
+        void clickOnEditButton(int id) {
+            webDriver.findElement(By.id("edit-button-ingredient-" + id)).click();
+            wait.until(requestIsComplete());
+        }
+
+        private List<String> getClassValues(String className) {
+            List<WebElement> elements = webDriver.findElements(By.className(className));
+            return elements.stream().map(WebElement::getText).collect(Collectors.toList());
+        }
+    }
+
+    static class AddIngredientForm {
+
+        void writeName(String name) {
+            writeToInput("add-input-ingredient-name", name);
+        }
+
+        void writeQuantity(String quantity) {
+            writeToInput("add-input-ingredient-quantity", quantity);
+        }
+
+        void writeUnit(String unit) {
+            writeToInput("add-input-ingredient-unit", unit);
+        }
+
+        void submit() {
+            webDriver.findElement(By.id("add-button-ingredient")).click();
+            wait.until(requestIsComplete());
+        }
+
+        private void writeToInput(String id, String value) {
+            webDriver.findElement(By.id(id)).sendKeys(value);
+        }
+    }
+
+    static class EditIngredientForm {
+
+        String getName() {
+            return getInputValue("edit-input-ingredient-name");
+        }
+
+        String getQuantity() {
+            return getInputValue("edit-input-ingredient-quantity");
+        }
+
+        String getUnit() {
+            return getInputValue("edit-input-ingredient-unit");
+        }
+
+        void replaceName(String name) {
+            replaceInputText("edit-input-ingredient-name", name);
+        }
+
+        void replaceQuantity(String quantity) {
+            replaceInputText("edit-input-ingredient-quantity", quantity);
+        }
+
+        void replaceUnit(String unit) {
+            replaceInputText("edit-input-ingredient-unit", unit);
+        }
+
+        void submit() {
+            webDriver.findElement(By.id("save-button-ingredient")).click();
+            wait.until(requestIsComplete());
+        }
+
+        private String getInputValue(String id) {
+            return webDriver.findElement(By.id(id)).getAttribute("value");
+        }
+
+        private void replaceInputText(String id, String value) {
+            WebElement element = webDriver.findElement(By.id(id));
+            element.clear();
+            element.sendKeys(value);
         }
     }
 
