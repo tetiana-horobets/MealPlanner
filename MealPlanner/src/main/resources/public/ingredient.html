@@ -24,14 +24,26 @@
                         html += '<td class="ingredient-name">' + ingredient.name + '</td>';
                         html += '<td class="ingredient-quantity">' + ingredient.quantity + '</td>';
                         html += '<td class="ingredient-unit">' + ingredient.unit + '</td>';
+                        html += '<td><button id="delete-button-ingredient-' + ingredient.id + '" class="delete-button-ingredient" data-id="' + ingredient.id + '"></button></td>';
                         html += '</tr>';
                     }
 
                     $('#container').html(html);
+
+                    $('.delete-button-ingredient').click(function(){
+                        event.preventDefault();
+
+                        var id = $(this).data('id');
+                        $.ajax({
+                            url: '/api/ingredient/' + id,
+                            type: 'DELETE',
+                            success: loadIngredients
+                        });
+                    });
                 });
             };
 
-            $('#add-button-ingredient').click(function(e){
+            $('#add-button-ingredient').click(function(){
                 event.preventDefault();
 
                 var ingredient = {};

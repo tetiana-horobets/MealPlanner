@@ -2,59 +2,61 @@ package hello;
 
 
 import org.junit.AfterClass;
+import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.ArgumentCaptor;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.chrome.ChromeDriver;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureWebMvc;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Primary;
+import org.springframework.context.annotation.Profile;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringRunner;
 
-import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
-import static java.util.Arrays.asList;
 import static org.assertj.core.api.Java6Assertions.assertThat;
-import static org.mockito.Matchers.any;
-import static org.mockito.Mockito.*;
 import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.DEFINED_PORT;
 
 @RunWith(SpringRunner.class)
-@SpringBootTest(classes = Application.class, webEnvironment = DEFINED_PORT)
+@SpringBootTest(classes = {Application.class, IngredientWebTest.MockTestConfiguration.class}, webEnvironment = DEFINED_PORT)
 @AutoConfigureWebMvc
+@ActiveProfiles("web-test")
 public class IngredientWebTest {
 
-    @MockBean
-    private IngredientRepository repository;
-
     private static WebDriver webDriver;
+
+    @Autowired
+    private MockIngredientRepository mockRepository;
 
     @BeforeClass
     public static void setUp() {
         webDriver = new ChromeDriver();
     }
 
+    @Before
+    public void setUpRepository() {
+        mockRepository.reset();
+    }
+
     @Test
     public void showsAllIngredients() throws Exception {
-        Collection<Ingredient> allIngredients = asList(
-                new Ingredient(1, "Garlic", "1", "piece"),
-                new Ingredient(2, "Milk", "300", "ml")
-        );
-
-        doReturn(allIngredients).when(repository).findAll();
+        mockRepository.add(new Ingredient(1, "Garlic", "1", "piece"));
+        mockRepository.add(new Ingredient(2, "Milk", "300", "ml"));
 
         webDriver.get("localhost:8080/ingredient.html");
 
         Thread.sleep(1000);
-
-        String welcomeText = webDriver.findElement(By.tagName("h1")).getText();
-        assertThat(welcomeText).isEqualTo("Ingredients");
 
         List<WebElement> names = webDriver.findElements(By.className("ingredient-name"));
         assertThat(names).extracting(WebElement::getText).containsExactly("Garlic", "Milk");
@@ -68,15 +70,7 @@ public class IngredientWebTest {
 
     @Test
     public void addsIngredient() throws Exception {
-        Collection<Ingredient> allIngredients = new ArrayList<>();
-        allIngredients.add(new Ingredient(1, "Garlic", "1", "piece"));
-
-        doReturn(allIngredients).when(repository).findAll();
-        doAnswer(invocation -> {
-            Ingredient ingredient = (Ingredient) invocation.getArguments()[0];
-            allIngredients.add(ingredient);
-            return null;
-        }).when(repository).add(any(Ingredient.class));
+        mockRepository.add(new Ingredient(1, "Garlic", "1", "piece"));
 
         webDriver.get("localhost:8080/ingredient.html");
 
@@ -88,9 +82,7 @@ public class IngredientWebTest {
 
         Thread.sleep(1000);
 
-        ArgumentCaptor<Ingredient> captor = ArgumentCaptor.forClass(Ingredient.class);
-        verify(repository).add(captor.capture());
-        Ingredient savedIngredient = captor.getValue();
+        Ingredient savedIngredient = mockRepository.getLastSavedIngredient();
 
         assertThat(savedIngredient.getName()).isEqualTo("Sausage");
         assertThat(savedIngredient.getQuantity()).isEqualTo("1");
@@ -106,8 +98,88 @@ public class IngredientWebTest {
         assertThat(units).extracting(WebElement::getText).containsExactly("piece", "kg");
     }
 
+    @Test
+    public void deletesIngredient() throws Exception {
+        Ingredient garlic = new Ingredient(1, "Garlic", "1", "piece");
+        Ingredient milk = new Ingredient(2, "Milk", "300", "ml");
+
+        mockRepository.add(garlic);
+        mockRepository.add(milk);
+
+        webDriver.get("localhost:8080/ingredient.html");
+
+        Thread.sleep(1000);
+
+        webDriver.findElement(By.id("delete-button-ingredient-2")).click();
+
+        Thread.sleep(1000);
+
+        assertThat(mockRepository.findAll()).containsOnly(garlic);
+
+        List<WebElement> names = webDriver.findElements(By.className("ingredient-name"));
+        assertThat(names).extracting(WebElement::getText).containsExactly("Garlic");
+
+        List<WebElement> quantities = webDriver.findElements(By.className("ingredient-quantity"));
+        assertThat(quantities).extracting(WebElement::getText).containsExactly("1");
+
+        List<WebElement> units = webDriver.findElements(By.className("ingredient-unit"));
+        assertThat(units).extracting(WebElement::getText).containsExactly("piece");
+    }
+
     @AfterClass
     public static void tearDown() {
         webDriver.close();
+    }
+
+    @Configuration
+    static class MockTestConfiguration {
+
+        @Bean
+        @Primary
+        @Profile("web-test")
+        public MockIngredientRepository repository() {
+            return new MockIngredientRepository();
+        }
+    }
+
+    static class MockIngredientRepository implements IngredientRepository {
+
+        private Map<Long, Ingredient> ingredients = new HashMap<>();
+        private long lastId = 0;
+
+        @Override
+        public Ingredient findById(long id) {
+            return ingredients.get(id);
+        }
+
+        @Override
+        public Collection<Ingredient> findAll() {
+            return ingredients.values();
+        }
+
+        @Override
+        public void delete(long id) {
+            ingredients.remove(id);
+        }
+
+        @Override
+        public void add(Ingredient ingredient) {
+            lastId++;
+            ingredients.put(lastId, ingredient);
+        }
+
+        @Override
+        public void edit(long id, Ingredient ingredient) {
+            ingredients.put(id, ingredient);
+        }
+
+        Ingredient getLastSavedIngredient() {
+            return findById(lastId);
+        }
+
+        void reset() {
+            ingredients.clear();
+            lastId = 0;
+        }
     }
 }
