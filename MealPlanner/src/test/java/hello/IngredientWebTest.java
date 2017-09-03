@@ -1,6 +1,7 @@
 package hello;
 
 
+import com.google.common.base.Predicate;
 import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
@@ -10,6 +11,7 @@ import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.chrome.ChromeDriver;
+import org.openqa.selenium.support.ui.WebDriverWait;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureWebMvc;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -35,6 +37,7 @@ import static org.springframework.boot.test.context.SpringBootTest.WebEnvironmen
 public class IngredientWebTest {
 
     private static WebDriver webDriver;
+    private static WebDriverWait wait;
 
     @Autowired
     private MockIngredientRepository mockRepository;
@@ -42,6 +45,7 @@ public class IngredientWebTest {
     @BeforeClass
     public static void setUp() {
         webDriver = new ChromeDriver();
+        wait = new WebDriverWait(webDriver, 10);
     }
 
     @Before
@@ -55,16 +59,14 @@ public class IngredientWebTest {
         mockRepository.add(new Ingredient(2, "Milk", "300", "ml"));
 
         webDriver.get("localhost:8080/ingredient.html");
-
-        Thread.sleep(1000);
+        wait.until(requestIsComplete());
 
         List<WebElement> names = webDriver.findElements(By.className("ingredient-name"));
-        assertThat(names).extracting(WebElement::getText).containsExactly("Garlic", "Milk");
-
         List<WebElement> quantities = webDriver.findElements(By.className("ingredient-quantity"));
-        assertThat(quantities).extracting(WebElement::getText).containsExactly("1", "300");
-
         List<WebElement> units = webDriver.findElements(By.className("ingredient-unit"));
+
+        assertThat(names).extracting(WebElement::getText).containsExactly("Garlic", "Milk");
+        assertThat(quantities).extracting(WebElement::getText).containsExactly("1", "300");
         assertThat(units).extracting(WebElement::getText).containsExactly("piece", "ml");
     }
 
@@ -73,56 +75,38 @@ public class IngredientWebTest {
         mockRepository.add(new Ingredient(1, "Garlic", "1", "piece"));
 
         webDriver.get("localhost:8080/ingredient.html");
-
         webDriver.findElement(By.id("add-input-ingredient-name")).sendKeys("Sausage");
         webDriver.findElement(By.id("add-input-ingredient-quantity")).sendKeys("1");
         webDriver.findElement(By.id("add-input-ingredient-unit")).sendKeys("kg");
-
         webDriver.findElement(By.id("add-button-ingredient")).click();
-
-        Thread.sleep(1000);
-
-        Ingredient savedIngredient = mockRepository.getLastSavedIngredient();
-
-        assertThat(savedIngredient.getName()).isEqualTo("Sausage");
-        assertThat(savedIngredient.getQuantity()).isEqualTo("1");
-        assertThat(savedIngredient.getUnit()).isEqualTo("kg");
+        wait.until(requestIsComplete());
 
         List<WebElement> names = webDriver.findElements(By.className("ingredient-name"));
-        assertThat(names).extracting(WebElement::getText).containsExactly("Garlic", "Sausage");
-
         List<WebElement> quantities = webDriver.findElements(By.className("ingredient-quantity"));
-        assertThat(quantities).extracting(WebElement::getText).containsExactly("1", "1");
-
         List<WebElement> units = webDriver.findElements(By.className("ingredient-unit"));
+
+        assertThat(names).extracting(WebElement::getText).containsExactly("Garlic", "Sausage");
+        assertThat(quantities).extracting(WebElement::getText).containsExactly("1", "1");
         assertThat(units).extracting(WebElement::getText).containsExactly("piece", "kg");
     }
 
     @Test
     public void deletesIngredient() throws Exception {
-        Ingredient garlic = new Ingredient(1, "Garlic", "1", "piece");
-        Ingredient milk = new Ingredient(2, "Milk", "300", "ml");
-
-        mockRepository.add(garlic);
-        mockRepository.add(milk);
+        mockRepository.add(new Ingredient(1, "Garlic", "1", "piece"));
+        mockRepository.add(new Ingredient(2, "Milk", "300", "ml"));
 
         webDriver.get("localhost:8080/ingredient.html");
-
-        Thread.sleep(1000);
+        wait.until(requestIsComplete());
 
         webDriver.findElement(By.id("delete-button-ingredient-2")).click();
-
-        Thread.sleep(1000);
-
-        assertThat(mockRepository.findAll()).containsOnly(garlic);
+        wait.until(requestIsComplete());
 
         List<WebElement> names = webDriver.findElements(By.className("ingredient-name"));
-        assertThat(names).extracting(WebElement::getText).containsExactly("Garlic");
-
         List<WebElement> quantities = webDriver.findElements(By.className("ingredient-quantity"));
-        assertThat(quantities).extracting(WebElement::getText).containsExactly("1");
-
         List<WebElement> units = webDriver.findElements(By.className("ingredient-unit"));
+
+        assertThat(names).extracting(WebElement::getText).containsExactly("Garlic");
+        assertThat(quantities).extracting(WebElement::getText).containsExactly("1");
         assertThat(units).extracting(WebElement::getText).containsExactly("piece");
     }
 
@@ -132,12 +116,10 @@ public class IngredientWebTest {
         mockRepository.add(new Ingredient(2, "Milk", "300", "ml"));
 
         webDriver.get("localhost:8080/ingredient.html");
-
-        Thread.sleep(1000);
+        wait.until(requestIsComplete());
 
         webDriver.findElement(By.id("edit-button-ingredient-2")).click();
-
-        Thread.sleep(1000);
+        wait.until(requestIsComplete());
 
         WebElement inputName = webDriver.findElement(By.id("edit-input-ingredient-name"));
         WebElement inputQuantity = webDriver.findElement(By.id("edit-input-ingredient-quantity"));
@@ -156,23 +138,19 @@ public class IngredientWebTest {
         inputUnit.sendKeys("l");
 
         webDriver.findElement(By.id("save-button-ingredient")).click();
-
-        Thread.sleep(1000);
-
-        Ingredient secondIngredient = mockRepository.findById(2);
-
-        assertThat(secondIngredient.getName()).isEqualTo("Water");
-        assertThat(secondIngredient.getQuantity()).isEqualTo("2");
-        assertThat(secondIngredient.getUnit()).isEqualTo("l");
+        wait.until(requestIsComplete());
 
         List<WebElement> names = webDriver.findElements(By.className("ingredient-name"));
-        assertThat(names).extracting(WebElement::getText).containsExactly("Garlic", "Water");
-
         List<WebElement> quantities = webDriver.findElements(By.className("ingredient-quantity"));
-        assertThat(quantities).extracting(WebElement::getText).containsExactly("1", "2");
-
         List<WebElement> units = webDriver.findElements(By.className("ingredient-unit"));
+
+        assertThat(names).extracting(WebElement::getText).containsExactly("Garlic", "Water");
+        assertThat(quantities).extracting(WebElement::getText).containsExactly("1", "2");
         assertThat(units).extracting(WebElement::getText).containsExactly("piece", "l");
+    }
+
+    private Predicate<WebDriver> requestIsComplete() {
+        return (webDriver) -> webDriver != null && webDriver.findElement(By.id("async-load")).getAttribute("value").equals("false");
     }
 
     @AfterClass
@@ -220,10 +198,6 @@ public class IngredientWebTest {
         @Override
         public void edit(long id, Ingredient ingredient) {
             ingredients.put(id, ingredient);
-        }
-
-        Ingredient getLastSavedIngredient() {
-            return findById(lastId);
         }
 
         void reset() {

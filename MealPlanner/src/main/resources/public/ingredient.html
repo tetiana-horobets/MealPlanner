@@ -8,7 +8,13 @@
     <script type="text/javascript">
         $(document).ready(function() {
             $.ajaxSetup({
-              contentType: "application/json; charset=utf-8"
+                contentType: "application/json; charset=utf-8",
+                beforeSend: function() {
+                    $('#async-load').val('true');
+                },
+                complete: function() {
+                    $('#async-load').val('false');
+                }
             });
 
             var loadIngredients = function() {
@@ -35,6 +41,7 @@
                         event.preventDefault();
 
                         var id = $(this).data('id');
+
                         $.ajax({
                             url: '/api/ingredient/' + id,
                             type: 'DELETE',
@@ -116,4 +123,6 @@
 
         <button id="save-button-ingredient"></button>
     </form>
+
+    Loading: <input id="async-load"/>
 </body>
