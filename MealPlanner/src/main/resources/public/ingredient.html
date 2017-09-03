@@ -25,6 +25,7 @@
                         html += '<td class="ingredient-quantity">' + ingredient.quantity + '</td>';
                         html += '<td class="ingredient-unit">' + ingredient.unit + '</td>';
                         html += '<td><button id="delete-button-ingredient-' + ingredient.id + '" class="delete-button-ingredient" data-id="' + ingredient.id + '"></button></td>';
+                        html += '<td><button id="edit-button-ingredient-' + ingredient.id + '" class="edit-button-ingredient" data-id="' + ingredient.id + '"></button></td>';
                         html += '</tr>';
                     }
 
@@ -38,6 +39,21 @@
                             url: '/api/ingredient/' + id,
                             type: 'DELETE',
                             success: loadIngredients
+                        });
+                    });
+
+                    $('.edit-button-ingredient').click(function(){
+                        event.preventDefault();
+
+                        var id = $(this).data("id");
+                        $('#edit-id').val(id);
+
+                        $.ajax({
+                            url: '/api/ingredient/' + id,
+                        }).then(function(data) {
+                            $('#edit-input-ingredient-name').val(data.name);
+                            $('#edit-input-ingredient-quantity').val(data.quantity);
+                            $('#edit-input-ingredient-unit').val(data.unit);
                         });
                     });
                 });
@@ -55,6 +71,25 @@
                 $.post("/api/ingredient", JSON.stringify(ingredient)).done(loadIngredients);
             });
 
+            $('#save-button-ingredient').click(function(){
+                 event.preventDefault();
+
+                 var id = $('#edit-id').val();
+
+                 var ingredient = {};
+
+                 ingredient.name = $('#edit-input-ingredient-name').val();
+                 ingredient.quantity = $('#edit-input-ingredient-quantity').val();
+                 ingredient.unit = $('#edit-input-ingredient-unit').val();
+
+                 $.ajax({
+                     url: '/api/ingredient/' + id,
+                     type: 'PUT',
+                     data: JSON.stringify(ingredient),
+                     success: loadIngredients
+                 });
+            });
+
             loadIngredients();
         });
     </script>
@@ -69,5 +104,16 @@
         <input id="add-input-ingredient-unit"/>
 
         <button id="add-button-ingredient"></button>
+    </form>
+    <h1> Edit ingredient</h1>
+    <div id="Edit-container"></div>
+
+    <form>
+        <input id="edit-input-ingredient-name"/>
+        <input id="edit-input-ingredient-quantity"/>
+        <input id="edit-input-ingredient-unit"/>
+        <input id="edit-id" />
+
+        <button id="save-button-ingredient"></button>
     </form>
 </body>

@@ -126,6 +126,55 @@ public class IngredientWebTest {
         assertThat(units).extracting(WebElement::getText).containsExactly("piece");
     }
 
+    @Test
+    public void editIngredient() throws Exception {
+        mockRepository.add(new Ingredient(1, "Garlic", "1", "piece"));
+        mockRepository.add(new Ingredient(2, "Milk", "300", "ml"));
+
+        webDriver.get("localhost:8080/ingredient.html");
+
+        Thread.sleep(1000);
+
+        webDriver.findElement(By.id("edit-button-ingredient-2")).click();
+
+        Thread.sleep(1000);
+
+        WebElement inputName = webDriver.findElement(By.id("edit-input-ingredient-name"));
+        WebElement inputQuantity = webDriver.findElement(By.id("edit-input-ingredient-quantity"));
+        WebElement inputUnit = webDriver.findElement(By.id("edit-input-ingredient-unit"));
+
+        assertThat(inputName.getAttribute("value")).isEqualTo("Milk");
+        assertThat(inputQuantity.getAttribute("value")).isEqualTo("300");
+        assertThat(inputUnit.getAttribute("value")).isEqualTo("ml");
+
+        inputName.clear();
+        inputQuantity.clear();
+        inputUnit.clear();
+
+        inputName.sendKeys("Water");
+        inputQuantity.sendKeys("2");
+        inputUnit.sendKeys("l");
+
+        webDriver.findElement(By.id("save-button-ingredient")).click();
+
+        Thread.sleep(1000);
+
+        Ingredient secondIngredient = mockRepository.findById(2);
+
+        assertThat(secondIngredient.getName()).isEqualTo("Water");
+        assertThat(secondIngredient.getQuantity()).isEqualTo("2");
+        assertThat(secondIngredient.getUnit()).isEqualTo("l");
+
+        List<WebElement> names = webDriver.findElements(By.className("ingredient-name"));
+        assertThat(names).extracting(WebElement::getText).containsExactly("Garlic", "Water");
+
+        List<WebElement> quantities = webDriver.findElements(By.className("ingredient-quantity"));
+        assertThat(quantities).extracting(WebElement::getText).containsExactly("1", "2");
+
+        List<WebElement> units = webDriver.findElements(By.className("ingredient-unit"));
+        assertThat(units).extracting(WebElement::getText).containsExactly("piece", "l");
+    }
+
     @AfterClass
     public static void tearDown() {
         webDriver.close();
