@@ -26,4 +26,14 @@ class JdbcPlanRepository implements PlanRepository{
     public Collection<Plan> findAll() {
         return jdbcTemplate.query("SELECT * FROM plan", (resultSet, rowNum) -> new Plan(resultSet));
     }
+
+    @Override
+    public void delete(long id) {
+        jdbcTemplate.update("DELETE FROM plan WHERE id = ?", id);
+    }
+
+    @Override
+    public void add(Plan plan) {
+        jdbcTemplate.update("INSERT INTO plan (name, startDate) VALUES (?, ?)", plan.getName(), plan.getStartDate());
+    }
 }

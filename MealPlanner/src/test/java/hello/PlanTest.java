@@ -2,11 +2,13 @@ package hello;
 
 import com.github.springtestdbunit.DbUnitTestExecutionListener;
 import com.github.springtestdbunit.annotation.DatabaseSetup;
+import com.github.springtestdbunit.annotation.ExpectedDatabase;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.http.MediaType;
 import org.springframework.test.context.TestExecutionListeners;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.context.support.DependencyInjectionTestExecutionListener;
@@ -14,7 +16,10 @@ import org.springframework.test.context.support.DirtiesContextTestExecutionListe
 import org.springframework.test.context.transaction.TransactionalTestExecutionListener;
 import org.springframework.test.web.servlet.MockMvc;
 
+import static com.github.springtestdbunit.assertion.DatabaseAssertionMode.NON_STRICT;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -44,7 +49,6 @@ public class PlanTest {
     @Test
     @DatabaseSetup("plan-setup-findAll.xml")
     public void findsAllPlans() throws Exception {
-
         mockMvc.perform(get("/plan"))
                 .andDo(print())
                 .andExpect(status().isOk())
@@ -60,5 +64,28 @@ public class PlanTest {
                         "    \"startDate\": \"2017-09-15\"\n" +
                         "  }\n" +
                         "]"));
+    }
+
+    @Test
+    @DatabaseSetup("plan-setup-delete.xml")
+    @ExpectedDatabase(assertionMode = NON_STRICT, value = "plan-expected-delete.xml")
+    public void deletesPlan() throws Exception {
+        mockMvc.perform(delete("/plan/1"))
+                .andDo(print())
+                .andExpect(status().isOk());
+    }
+
+    @Test
+    @DatabaseSetup("plan-setup-create.xml")
+    @ExpectedDatabase(assertionMode = NON_STRICT, value = "plan-expected-create.xml")
+    public void createsPlan() throws Exception {
+        mockMvc.perform(post("/plan")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content("{\n" +
+                        "    \"name\": \"Light\",\n" +
+                        "    \"startDate\": \"2017-09-15\"\n" +
+                        "}"))
+                .andDo(print())
+                .andExpect(status().isOk());
     }
 }

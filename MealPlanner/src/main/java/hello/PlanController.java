@@ -23,4 +23,14 @@ public class PlanController {
     public Collection<Plan> getPlans() {
         return repository.findAll();
     }
+
+    @DeleteMapping("/plan/{id}")
+    public void deletePlan(@PathVariable(value = "id") long id) {
+        repository.delete(id);
+    }
+
+    @PostMapping("/plan")
+    public void addPlan(@RequestBody Plan plan) {
+        repository.add(plan);
+    }
 }

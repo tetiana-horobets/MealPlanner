@@ -1,0 +1,5 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dataset>
+    <plan name="Vegetarian" startDate="2017-09-04" />
+    <plan name="Light" startDate="2017-09-15" />
+</dataset>
