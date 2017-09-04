@@ -11,4 +11,6 @@ interface PlanRepository {
 
     void add(Plan plan);
 
+    void edit(long id, Plan plan);
+
 }

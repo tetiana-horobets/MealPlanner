@@ -33,4 +33,9 @@ public class PlanController {
     public void addPlan(@RequestBody Plan plan) {
         repository.add(plan);
     }
+
+    @PutMapping("/plan/{id}")
+    public void editPlan(@PathVariable(value = "id") long id, @RequestBody Plan plan) {
+        repository.edit(id, plan);
+    }
 }

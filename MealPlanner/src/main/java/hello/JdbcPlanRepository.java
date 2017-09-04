@@ -36,4 +36,9 @@ class JdbcPlanRepository implements PlanRepository{
     public void add(Plan plan) {
         jdbcTemplate.update("INSERT INTO plan (name, startDate) VALUES (?, ?)", plan.getName(), plan.getStartDate());
     }
+
+    @Override
+    public void edit(long id, Plan plan) {
+        jdbcTemplate.update("UPDATE plan set name = ?, startDate = ? WHERE id = ?", plan.getName(), plan.getStartDate(), id);
+    }
 }

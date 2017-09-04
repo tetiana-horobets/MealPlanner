@@ -17,9 +17,7 @@ import org.springframework.test.context.transaction.TransactionalTestExecutionLi
 import org.springframework.test.web.servlet.MockMvc;
 
 import static com.github.springtestdbunit.assertion.DatabaseAssertionMode.NON_STRICT;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -84,6 +82,21 @@ public class PlanTest {
                 .content("{\n" +
                         "    \"name\": \"Light\",\n" +
                         "    \"startDate\": \"2017-09-15\"\n" +
+                        "}"))
+                .andDo(print())
+                .andExpect(status().isOk());
+    }
+
+    @Test
+    @DatabaseSetup("plan-setup-edit.xml")
+    @ExpectedDatabase(assertionMode = NON_STRICT, value = "plane-expected-edit.xml")
+    public void editsPlants() throws Exception {
+
+        mockMvc.perform(put("/plan/1")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content("{\n" +
+                        "    \"name\": \"Light\",\n" +
+                        "    \"startDate\": \"2018-01-10\"\n" +
                         "}"))
                 .andDo(print())
                 .andExpect(status().isOk());
