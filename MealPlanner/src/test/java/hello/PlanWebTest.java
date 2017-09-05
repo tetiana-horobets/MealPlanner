@@ -39,6 +39,7 @@ public class PlanWebTest {
     private static WebDriverWait wait;
     private static PlanWebTest.PlanPage page;
     private static PlanWebTest.AddPlanForm addForm;
+    private static PlanWebTest.EditPlanForm editForm;
 
     @Autowired
     private PlanWebTest.MockPlanRepository mockRepository;
@@ -47,8 +48,10 @@ public class PlanWebTest {
     public static void setUp() {
         webDriver = new ChromeDriver();
         wait = new WebDriverWait(webDriver, 10);
+
         page = new PlanPage();
-        addForm = new PlanWebTest.AddPlanForm();
+        addForm = new AddPlanForm();
+        editForm = new EditPlanForm();
     }
 
     @Before
@@ -95,6 +98,26 @@ public class PlanWebTest {
 
     }
 
+    @Test
+    public void editPlan() throws Exception {
+        mockRepository.add(new Plan(1, "Vegetarian", "2017-09-04"));
+        mockRepository.add(new Plan(2, "Light", "2017-09-15"));
+
+        page.open();
+        page.clickOnEditButton(2);
+
+        assertThat(editForm.getName()).isEqualTo("Light");
+        assertThat(editForm.getStartDate()).isEqualTo("2017-09-15");
+
+
+        editForm.replaceName("Favorite");
+        editForm.replaceStartDate("2017-09-15");
+        editForm.submit();
+
+        assertThat(page.getPlanNames()).containsExactly("Vegetarian", "Favorite");
+        assertThat(page.getPlanStartDate()).containsExactly("2017-09-04", "2017-09-15");
+    }
+
     private static Predicate<WebDriver> requestIsComplete() {
         return (webDriver) -> webDriver != null && webDriver.findElement(By.id("async-load")).getAttribute("value").equals("false");
     }
@@ -134,6 +157,10 @@ public class PlanWebTest {
             webDriver.findElement(By.id("delete-button-plan-" + id)).click();
             wait.until(requestIsComplete());
         }
+        void clickOnEditButton(int id) {
+            webDriver.findElement(By.id("edit-button-plan-" + id)).click();
+            wait.until(requestIsComplete());
+        }
 
         private List<String> getClassValues(String className) {
             List<WebElement> elements = webDriver.findElements(By.className(className));
@@ -161,6 +188,41 @@ public class PlanWebTest {
         }
     }
 
+    static class EditPlanForm {
+
+        String getName() {
+            return getInputValue("edit-input-plan-name");
+        }
+
+        String getStartDate() {
+            return getInputValue("edit-input-plan-startDate");
+        }
+
+
+        void replaceName(String name) {
+            replaceInputText("edit-input-plan-name", name);
+        }
+
+        void replaceStartDate(String startDate) {
+            replaceInputText("edit-input-plan-startDate", startDate);
+        }
+
+        void submit() {
+            webDriver.findElement(By.id("save-button-plan")).click();
+            wait.until(requestIsComplete());
+        }
+
+        private String getInputValue(String id) {
+            return webDriver.findElement(By.id(id)).getAttribute("value");
+        }
+
+        private void replaceInputText(String id, String value) {
+            WebElement element = webDriver.findElement(By.id(id));
+            element.clear();
+            element.sendKeys(value);
+        }
+    }
+
     static class MockPlanRepository implements PlanRepository {
 
         private Map<Long, Plan> plans = new HashMap<>();
@@ -169,7 +231,7 @@ public class PlanWebTest {
 
         @Override
         public Plan findById(long id) {
-            return null;
+            return plans.get(id);
         }
 
         @Override
@@ -188,7 +250,7 @@ public class PlanWebTest {
         }
 
         @Override
-        public void edit(long id, Plan plan) {
+        public void edit(long id, Plan plan) { plans.put(id, plan);
 
         }
 

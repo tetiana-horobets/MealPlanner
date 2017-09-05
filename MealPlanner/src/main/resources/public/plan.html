@@ -2,7 +2,9 @@
 <html lang="en">
 <head>
     <title>Plan</title>
+
     <script src="/webjars/jquery/3.1.1/jquery.min.js"></script>
+
     <script type="text/javascript">
         $(document).ready(function() {
             $.ajaxSetup({
@@ -28,6 +30,7 @@
                         html += '<td class="plan-name">' + plan.name + '</td>';
                         html += '<td class="plan-startDate">' + plan.startDate + '</td>';
                         html += '<td><button id="delete-button-plan-' + plan.id + '" class="delete-button-plan" data-id="' + plan.id + '"></button></td>';
+                        html += '<td><button id="edit-button-plan-' + plan.id + '" class="edit-button-plan" data-id="' + plan.id + '"></button></td>';
                         html += '</tr>';
                     }
                     $('#container').html(html);
@@ -43,9 +46,24 @@
                             success: loadPlans
                         });
                     });
-                });
 
+                    $('.edit-button-plan').click(function(){
+                            event.preventDefault();
+
+                            var id = $(this).data("id");
+                            $('#edit-id').val(id);
+
+                            $.ajax({
+                                url: '/api/plan/' + id,
+                            }).then(function(data) {
+                                $('#edit-input-plan-name').val(data.name);
+                                $('#edit-input-plan-startDate').val(data.startDate);
+                            });
+                    });
+                });
             };
+
+
             $('#add-button-plan').click(function(){
                 event.preventDefault();
 
@@ -57,6 +75,23 @@
                 $.post("/api/plan", JSON.stringify(plan)).done(loadPlans);
             });
 
+            $('#save-button-plan').click(function(){
+                 event.preventDefault();
+
+                 var id = $('#edit-id').val();
+
+                 var plan = {};
+
+                 plan.name = $('#edit-input-plan-name').val();
+                 plan.startDate = $('#edit-input-plan-startDate').val();
+
+                 $.ajax({
+                     url: '/api/plan/' + id,
+                     type: 'PUT',
+                     data: JSON.stringify(plan),
+                     success: loadPlans
+                 });
+            });
 
             loadPlans();
         });
@@ -73,5 +108,18 @@
 
     <button id="add-button-plan"></button>
 </form>
-Loading: <input id="async-load"/>
+
+<h1> Edit Plan</h1>
+<div id="Edit-container"></div>
+
+<form>
+    <input id="edit-input-plan-name"/>
+    <input id="edit-input-plan-startDate"/>
+    <input id="edit-id" />
+
+    <button id="save-button-plan"></button>
+</form>
+
+    Loading: <input id="async-load"/>
+
 </body>
