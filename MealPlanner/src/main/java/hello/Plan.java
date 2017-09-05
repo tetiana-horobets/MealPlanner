@@ -11,6 +11,12 @@ class Plan {
     public Plan() {
     }
 
+    public Plan(long id, String name, String startDate) {
+        this.id = id;
+        this.name = name;
+        this.startDate = startDate;
+    }
+
     Plan(ResultSet resultSet) throws SQLException {
         this.id = resultSet.getLong("id");
         this.name = resultSet.getString("name");

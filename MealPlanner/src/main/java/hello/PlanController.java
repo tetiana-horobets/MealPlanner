@@ -14,27 +14,27 @@ public class PlanController {
         this.repository = repository;
     }
 
-    @GetMapping("/plan/{id}")
+    @GetMapping("/api/plan/{id}")
     public Plan getPlan(@PathVariable(value = "id") long id) {
         return repository.findById(id);
     }
 
-    @GetMapping("/plan")
+    @GetMapping("/api/plan")
     public Collection<Plan> getPlans() {
         return repository.findAll();
     }
 
-    @DeleteMapping("/plan/{id}")
+    @DeleteMapping("/api/plan/{id}")
     public void deletePlan(@PathVariable(value = "id") long id) {
         repository.delete(id);
     }
 
-    @PostMapping("/plan")
+    @PostMapping("/api/plan")
     public void addPlan(@RequestBody Plan plan) {
         repository.add(plan);
     }
 
-    @PutMapping("/plan/{id}")
+    @PutMapping("/api/plan/{id}")
     public void editPlan(@PathVariable(value = "id") long id, @RequestBody Plan plan) {
         repository.edit(id, plan);
     }

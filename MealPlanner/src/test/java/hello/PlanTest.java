@@ -34,7 +34,7 @@ public class PlanTest {
     @Test
     @DatabaseSetup("plan-setup-findById.xml")
     public void findsPlanById() throws Exception {
-        mockMvc.perform(get("/plan/1"))
+        mockMvc.perform(get("/api/plan/1"))
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(content().json("{\n" +
@@ -47,7 +47,7 @@ public class PlanTest {
     @Test
     @DatabaseSetup("plan-setup-findAll.xml")
     public void findsAllPlans() throws Exception {
-        mockMvc.perform(get("/plan"))
+        mockMvc.perform(get("/api/plan"))
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(content().json("[\n" +
@@ -68,7 +68,7 @@ public class PlanTest {
     @DatabaseSetup("plan-setup-delete.xml")
     @ExpectedDatabase(assertionMode = NON_STRICT, value = "plan-expected-delete.xml")
     public void deletesPlan() throws Exception {
-        mockMvc.perform(delete("/plan/1"))
+        mockMvc.perform(delete("/api/plan/1"))
                 .andDo(print())
                 .andExpect(status().isOk());
     }
@@ -77,7 +77,7 @@ public class PlanTest {
     @DatabaseSetup("plan-setup-create.xml")
     @ExpectedDatabase(assertionMode = NON_STRICT, value = "plan-expected-create.xml")
     public void createsPlan() throws Exception {
-        mockMvc.perform(post("/plan")
+        mockMvc.perform(post("/api/plan")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content("{\n" +
                         "    \"name\": \"Light\",\n" +
@@ -92,7 +92,7 @@ public class PlanTest {
     @ExpectedDatabase(assertionMode = NON_STRICT, value = "plane-expected-edit.xml")
     public void editsPlants() throws Exception {
 
-        mockMvc.perform(put("/plan/1")
+        mockMvc.perform(put("/api/plan/1")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content("{\n" +
                         "    \"name\": \"Light\",\n" +

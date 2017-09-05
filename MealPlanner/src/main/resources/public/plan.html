@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Plan</title>
+    <script src="/webjars/jquery/3.1.1/jquery.min.js"></script>
+    <script type="text/javascript">
+        $(document).ready(function() {
+            $.ajaxSetup({
+                contentType: "application/json; charset=utf-8",
+                beforeSend: function() {
+                    $('#async-load').val('true');
+                },
+                complete: function() {
+                    $('#async-load').val('false');
+                }
+            });
+
+            var loadPlans = function() {
+                $.ajax({
+                    url: "/api/plan"
+                }).then(function(plans) {
+                    var html = '<table>';
+
+                    for(var i in plans) {
+                        var plan = plans[i];
+
+                        html += '<tr>';
+                        html += '<td class="plan-name">' + plan.name + '</td>';
+                        html += '<td class="plan-startDate">' + plan.startDate + '</td>';
+                        html += '</tr>';
+                    }
+                    $('#container').html(html);
+                });
+
+            };
+            $('#add-button-plan').click(function(){
+                event.preventDefault();
+
+                var plan = {};
+
+                plan.name = $('#add-input-plan-name').val();
+                plan.startDate = $('#add-input-plan-startDate').val();
+
+                $.post("/api/plan", JSON.stringify(plan)).done(loadPlans);
+            });
+
+
+            loadPlans();
+        });
+
+ </script>
+
+</head>
+<body>
+<h1>Plan</h1>
+<div id="container"></div>
+<form>
+    <input id="add-input-plan-name"/>
+    <input id="add-input-plan-startDate"/>
+
+    <button id="add-button-plan"></button>
+</form>
+Loading: <input id="async-load"/>
+</body>
