@@ -27,9 +27,22 @@
                         html += '<tr>';
                         html += '<td class="plan-name">' + plan.name + '</td>';
                         html += '<td class="plan-startDate">' + plan.startDate + '</td>';
+                        html += '<td><button id="delete-button-plan-' + plan.id + '" class="delete-button-plan" data-id="' + plan.id + '"></button></td>';
                         html += '</tr>';
                     }
                     $('#container').html(html);
+
+                     $('.delete-button-plan').click(function(){
+                        event.preventDefault();
+
+                        var id = $(this).data('id');
+
+                        $.ajax({
+                            url: '/api/plan/' + id,
+                            type: 'DELETE',
+                            success: loadPlans
+                        });
+                    });
                 });
 
             };

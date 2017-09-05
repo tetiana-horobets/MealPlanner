@@ -82,6 +82,19 @@ public class PlanWebTest {
 
     }
 
+    @Test
+    public void deletesPlan() throws Exception {
+        mockRepository.add(new Plan(1, "Vegetarian", "2017-09-04"));
+        mockRepository.add(new Plan(2, "Light", "2017-09-15"));
+
+        page.open();
+        page.clickOnRemoveButton(2);
+
+        assertThat(page.getPlanNames()).containsExactly("Vegetarian");
+        assertThat(page.getPlanStartDate()).containsExactly("2017-09-04");
+
+    }
+
     private static Predicate<WebDriver> requestIsComplete() {
         return (webDriver) -> webDriver != null && webDriver.findElement(By.id("async-load")).getAttribute("value").equals("false");
     }
@@ -115,6 +128,11 @@ public class PlanWebTest {
 
         List<String> getPlanStartDate() {
             return getClassValues("plan-startDate");
+        }
+
+        void clickOnRemoveButton(int id) {
+            webDriver.findElement(By.id("delete-button-plan-" + id)).click();
+            wait.until(requestIsComplete());
         }
 
         private List<String> getClassValues(String className) {
@@ -159,7 +177,7 @@ public class PlanWebTest {
         }
 
         @Override
-        public void delete(long id) {
+        public void delete(long id) { plans.remove(id);
 
         }
 
